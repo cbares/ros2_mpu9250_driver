@@ -35,7 +35,8 @@ MPU9250Driver::MPU9250Driver() : Node("mpu9250publisher")
   mpu9250_->printConfig();
   mpu9250_->printOffsets();
   // Create publisher
-  publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+    publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
+    publisher_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("imu/mag", 10);
   std::chrono::duration<int64_t, std::milli> frequency =
       1000ms / this->get_parameter("gyro_range").as_int();
   timer_ = this->create_wall_timer(frequency, std::bind(&MPU9250Driver::handleInput, this));
@@ -44,6 +45,7 @@ MPU9250Driver::MPU9250Driver() : Node("mpu9250publisher")
 void MPU9250Driver::handleInput()
 {
   auto message = sensor_msgs::msg::Imu();
+  auto message_mag = sensor_msgs::msg::MagneticField();
   message.header.stamp = this->get_clock()->now();
   message.header.frame_id = "base_link";
   // Direct measurements
@@ -59,6 +61,13 @@ void MPU9250Driver::handleInput()
   message.orientation_covariance = {0};
   calculateOrientation(message);
   publisher_->publish(message);
+  // Magnetometer measurements
+  message_mag.header.stamp = message.header.stamp;
+  message_mag.magnetic_field_covariance = {0};
+  message_mag.magnetic_field.x = mpu9250_->getMagneticFluxDensityX();
+  message_mag.magnetic_field.y = mpu9250_->getMagneticFluxDensityY();
+  message_mag.magnetic_field.z = mpu9250_->getMagneticFluxDensityZ();
+  publisher_mag_->publish(message_mag);
 }
 
 void MPU9250Driver::declareParameters()

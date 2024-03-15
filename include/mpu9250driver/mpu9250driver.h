@@ -4,6 +4,7 @@
 #include "mpu9250sensor.h"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
+#include "sensor_msgs/msg/magnetic_field.hpp"
 
 class MPU9250Driver : public rclcpp::Node {
  public:
@@ -11,6 +12,7 @@ class MPU9250Driver : public rclcpp::Node {
 
  private:
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr publisher_mag_;
   std::unique_ptr<MPU9250Sensor> mpu9250_;
   size_t count_;
   rclcpp::TimerBase::SharedPtr timer_;
