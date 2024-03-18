@@ -7,6 +7,7 @@ extern "C" {
 
 #include <iostream>
 #include <thread>
+#include <cmath>
 
 MPU9250Sensor::MPU9250Sensor(std::unique_ptr<I2cCommunicator> i2cBus) : i2cBus_(std::move(i2cBus))
 {
@@ -318,4 +319,14 @@ void MPU9250Sensor::calibrate()
   accel_z_offset_ /= CALIBRATION_COUNT;
   accel_z_offset_ -= GRAVITY;
   calibrated_ = true;
+}
+
+void MPU9250Sensor::unset_rep103()
+{
+  rep103_ = false;
+}
+
+void MPU9250Sensor::set_rep103()
+{
+  rep103_ = true;
 }

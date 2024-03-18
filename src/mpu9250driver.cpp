@@ -34,9 +34,9 @@ MPU9250Driver::MPU9250Driver() : Node("mpu9250publisher")
   }
     if (this->get_parameter("rep103").as_bool()) {
         RCLCPP_INFO(this->get_logger(), "Use REP103 units...");
-        mpu9250_->rep103_ = true;
+        mpu9250_->set_rep103();
     } else {
-        mpu9250_->rep103_ = false;
+        mpu9250_->unset_rep103();
     }
 
   mpu9250_->printConfig();
