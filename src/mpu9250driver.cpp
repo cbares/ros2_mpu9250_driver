@@ -32,6 +32,13 @@ MPU9250Driver::MPU9250Driver() : Node("mpu9250publisher")
     RCLCPP_INFO(this->get_logger(), "Calibrating...");
     mpu9250_->calibrate();
   }
+    if (this->get_parameter("rep103").as_bool()) {
+        RCLCPP_INFO(this->get_logger(), "Use REP103 units...");
+        mpu9250_->rep103_ = true;
+    } else {
+        mpu9250_->rep103_ = false;
+    }
+
   mpu9250_->printConfig();
   mpu9250_->printOffsets();
   // Create publisher
@@ -83,6 +90,7 @@ void MPU9250Driver::declareParameters()
   this->declare_parameter<double>("accel_y_offset", 0.0);
   this->declare_parameter<double>("accel_z_offset", 0.0);
   this->declare_parameter<int>("frequency", 0.0);
+  this->declare_parameter<bool>("rep103", true);
 }
 
 void MPU9250Driver::calculateOrientation(sensor_msgs::msg::Imu& imu_message)

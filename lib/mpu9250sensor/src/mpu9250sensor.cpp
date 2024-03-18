@@ -259,6 +259,9 @@ double MPU9250Sensor::getMagneticFluxDensityZ() const
 double MPU9250Sensor::convertRawGyroscopeData(int16_t gyro_raw) const
 {
   const double ang_vel_in_deg_per_s = static_cast<double>(gyro_raw) / GYRO_SENS_MAP.at(gyro_range_);
+  if (rep103_) {
+    return ang_vel_in_deg_per_s/180*M_PI;
+  }
   return ang_vel_in_deg_per_s;
 }
 
@@ -266,14 +269,17 @@ double MPU9250Sensor::convertRawMagnetometerData(int16_t flux_raw) const
 {
   const double magn_flux_in_mu_tesla =
       static_cast<double>(flux_raw) * MAX_CONV_MAGN_FLUX / MAX_RAW_MAGN_FLUX;
+  if (rep103_){
+    return magn_flux_in_mu_tesla/1e6;
+  }
   return magn_flux_in_mu_tesla;
 }
 
 double MPU9250Sensor::convertRawAccelerometerData(int16_t accel_raw) const
 {
-  const double accel_in_m_per_s =
+  const double accel_in_m_per_s2 =
       static_cast<double>(accel_raw) / ACCEL_SENS_MAP.at(accel_range_) * GRAVITY;
-  return accel_in_m_per_s;
+  return accel_in_m_per_s2;
 }
 
 void MPU9250Sensor::setGyroscopeOffset(double gyro_x_offset, double gyro_y_offset,

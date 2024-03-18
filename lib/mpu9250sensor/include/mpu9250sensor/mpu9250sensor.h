@@ -65,6 +65,7 @@ class MPU9250Sensor {
   double accel_x_offset_{0.0};
   double accel_y_offset_{0.0};
   double accel_z_offset_{0.0};
+  bool rep103_{true};
 
   // MPU9250 registers and addresses (s. datasheet for details)
   static constexpr int MPU9250_ADDRESS_DEFAULT = 0x68;
