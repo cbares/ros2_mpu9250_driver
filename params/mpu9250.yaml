@@ -14,6 +14,6 @@ mpu9250driver_node:
     accel_x_offset: 0.0 # [m/s²]
     accel_y_offset: 0.0 # [m/s²]
     accel_z_offset: 0.0 # [m/s²]
-    frequency: 100 # [Hz]
+    frequency: 10 # [Hz]
     # use REP103 convention for units (rad/s, m/s², tesla) for /imu/data_raw and /imu/mag topics
     rep103: True

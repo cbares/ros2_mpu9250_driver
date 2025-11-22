@@ -44,9 +44,10 @@ MPU9250Driver::MPU9250Driver() : Node("mpu9250publisher")
   // Create publisher
     publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
     publisher_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("imu/mag", 10);
-  std::chrono::duration<int64_t, std::milli> frequency =
-      1000ms / this->get_parameter("gyro_range").as_int();
-  timer_ = this->create_wall_timer(frequency, std::bind(&MPU9250Driver::handleInput, this));
+  std::chrono::duration<int64_t, std::milli> period =
+      1000ms / this->get_parameter("frequency").as_int();
+  timer_ = this->create_wall_timer(period, std::bind(&MPU9250Driver::handleInput, this));
+  RCLCPP_INFO(this->get_logger(), "Timer Publishing period: %ld", period.count());
 }
 
 void MPU9250Driver::handleInput()
@@ -75,6 +76,8 @@ void MPU9250Driver::handleInput()
   message_mag.magnetic_field.y = mpu9250_->getMagneticFluxDensityY();
   message_mag.magnetic_field.z = mpu9250_->getMagneticFluxDensityZ();
   publisher_mag_->publish(message_mag);
+  auto& clk = *this->get_clock();
+  RCLCPP_DEBUG_THROTTLE(this->get_logger(), clk, 5000, "Publishing: IMU");
 }
 
 void MPU9250Driver::declareParameters()
