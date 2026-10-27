@@ -1,6 +1,8 @@
 #ifndef MPU9250DRIVER_H
 #define MPU9250DRIVER_H
 
+#include <string>
+
 #include "mpu9250sensor.h"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
@@ -15,6 +17,7 @@ class MPU9250Driver : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr publisher_mag_;
   std::unique_ptr<MPU9250Sensor> mpu9250_;
   size_t count_;
+  std::string frame_id_;  ///< frame of the IMU and magnetometer messages
   rclcpp::TimerBase::SharedPtr timer_;
   void handleInput();
   void declareParameters();

@@ -55,7 +55,7 @@ void MPU9250Driver::handleInput()
   auto message = sensor_msgs::msg::Imu();
   auto message_mag = sensor_msgs::msg::MagneticField();
   message.header.stamp = this->get_clock()->now();
-  message.header.frame_id = "base_link";
+  message.header.frame_id = frame_id_;
   // Direct measurements
   message.linear_acceleration_covariance = {0};
   message.linear_acceleration.x = mpu9250_->getAccelerationX();
@@ -71,6 +71,7 @@ void MPU9250Driver::handleInput()
   publisher_->publish(message);
   // Magnetometer measurements
   message_mag.header.stamp = message.header.stamp;
+  message_mag.header.frame_id = frame_id_;
   message_mag.magnetic_field_covariance = {0};
   message_mag.magnetic_field.x = mpu9250_->getMagneticFluxDensityX();
   message_mag.magnetic_field.y = mpu9250_->getMagneticFluxDensityY();
@@ -92,8 +93,9 @@ void MPU9250Driver::declareParameters()
   this->declare_parameter<double>("accel_x_offset", 0.0);
   this->declare_parameter<double>("accel_y_offset", 0.0);
   this->declare_parameter<double>("accel_z_offset", 0.0);
-  this->declare_parameter<int>("frequency", 0.0);
+  this->declare_parameter<int>("frequency", 100);
   this->declare_parameter<bool>("rep103", true);
+  frame_id_ = this->declare_parameter<std::string>("frame_id", "base_link");
 }
 
 void MPU9250Driver::calculateOrientation(sensor_msgs::msg::Imu& imu_message)
@@ -101,7 +103,7 @@ void MPU9250Driver::calculateOrientation(sensor_msgs::msg::Imu& imu_message)
   // Calculate Euler angles
   double roll, pitch, yaw;
   roll = atan2(imu_message.linear_acceleration.y, imu_message.linear_acceleration.z);
-  pitch = atan2(-imu_message.linear_acceleration.y,
+  pitch = atan2(-imu_message.linear_acceleration.x,
                 (sqrt(imu_message.linear_acceleration.y * imu_message.linear_acceleration.y +
                       imu_message.linear_acceleration.z * imu_message.linear_acceleration.z)));
   yaw = atan2(mpu9250_->getMagneticFluxDensityY(), mpu9250_->getMagneticFluxDensityX());

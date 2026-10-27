@@ -17,3 +17,5 @@ mpu9250driver_node:
     frequency: 10 # [Hz]
     # use REP103 convention for units (rad/s, m/s², tesla) for /imu/data_raw and /imu/mag topics
     rep103: True
+    # frame of the /imu/data_raw and /imu/mag messages (the IMU link of the URDF)
+    frame_id: base_link
